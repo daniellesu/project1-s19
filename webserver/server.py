@@ -120,11 +120,17 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM users")
+  # cursor = g.conn.execute("SELECT name FROM test")
+  # names = []
+  # for result in cursor:
+  #   names.append(result['name'])  # can also be accessed using result[0]
+  # cursor.close()
+
+  result = g.conn.execute("select name from users")
   names = []
-  for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
-  cursor.close()
+  for row in result:
+    names.append(row[0])
+  g.conn.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -175,13 +181,13 @@ def another():
 
 
 # Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  print name
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-  g.conn.execute(text(cmd), name1 = name, name2 = name);
-  return redirect('/')
+# @app.route('/add', methods=['POST'])
+# def add():
+#   name = request.form['name']
+#   print name
+#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
+#   g.conn.execute(text(cmd), name1 = name, name2 = name);
+#   return redirect('/')
 
 
 @app.route('/login')
