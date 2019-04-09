@@ -18,11 +18,11 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask
+from flask import Flask, flash, request, render_template, g, redirect, Response, session, abort
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
-
 
 
 # XXX: The Database URI should be in the format of:
@@ -102,7 +102,7 @@ def teardown_request(exception):
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
 @app.route('/')
-def index():
+def home():
   """
   request is a special object that Flask provides to access web request information:
 
@@ -116,8 +116,15 @@ def index():
   # DEBUG: this is debugging code to see what request looks like
   print request.args
 
+  # LOG IN INFORMATION
+  if not session.get('logged_in'):
+    return render_template('login.html')
 
-  #
+  else:
+    flash('You were successfully logged in!')
+    # return "You're logged in!"
+
+
   # example of a database query
   #
   # cursor = g.conn.execute("SELECT name FROM test")
@@ -165,7 +172,17 @@ def index():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  return render_template("home.html", **context)
+
+@app.route('/login', methods=['POST'])
+def login():
+  if request.form['username'] == 'user1' and request.form['home_zip'] == '10025':
+    session['logged_in'] = True
+
+  else:
+    flash('Wrong username and home zip combo!')
+
+  return home()
 
 #
 # This is an example of a different path.  You can see it at
@@ -190,13 +207,9 @@ def another():
 #   return redirect('/')
 
 
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
-
 
 if __name__ == "__main__":
+  app.secret_key = os.urandom(12)
   import click
 
   @click.command()
