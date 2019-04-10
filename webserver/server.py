@@ -182,7 +182,7 @@ def login():
   else:
     flash('You were successfully logged in!')
     session['username'] = request.form['username']
-    sesssion['home_zip'] = request.form['home_zip']
+    session['home_zip'] = request.form['home_zip']
     return home()
 
   return render_template('login.html', error=error)
