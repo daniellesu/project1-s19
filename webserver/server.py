@@ -100,7 +100,7 @@ def teardown_request(exception):
 #
 # see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
-#
+
 @app.route('/')
 def home():
   """
@@ -117,14 +117,12 @@ def home():
   print request.args
 
   # LOG IN INFORMATION
-  if not session.get('logged_in'):
+  if session.get('username') == None:
     return render_template('login.html')
 
   else:
-    flash('You were successfully logged in!')
-    # return "You're logged in!"
-
-
+    message = 'Welcome, %s' % (session['username'])
+    flash(message)
   # example of a database query
   #
   # cursor = g.conn.execute("SELECT name FROM test")
@@ -176,13 +174,24 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-  if request.form['username'] == 'user1' and request.form['home_zip'] == '10025':
-    session['logged_in'] = True
+  error = None
+  if request.form['username'] != 'user1' or \
+      request.form['home_zip'] != '10025':
+    error = 'Invalid credentials'
 
   else:
-    flash('Wrong username and home zip combo!')
+    flash('You were successfully logged in!')
+    session['username'] = request.form['username']
+    sesssion['home_zip'] = request.form['home_zip']
+    return home()
 
-  return home()
+  return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+   # remove the username from the session if it is there
+   session.pop('username', None)
+   return home()
 
 #
 # This is an example of a different path.  You can see it at

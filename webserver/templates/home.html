@@ -6,9 +6,10 @@
     }
   </style>
 
+{% extends "layout.html" %}
+{% block body %}
 
 <body>
-  <h1>What to wear today?</h1>
   <div>{{data}}</div>
 
   <div>
@@ -24,14 +25,9 @@
 <p>Enter your zipcode: <input type="text" name="name"> <input type="submit" value="Add"></p>
 </form>
 
-<h1>Sign in here:</h1>
-<form method="POST" action="/add">
-<p>Username: <input type="text" name="name"> <input type="submit" value="Add"></p>
-<p>Password: <input type="text" name="name"> <input type="submit" value="Add"></p>
-
-</form>
+<p><a href="/logout">Log Out</a></p>
 
 </body>
-
+{% endblock %}
 
 </html>
