@@ -9,25 +9,38 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<body>
-  <div>{{data}}</div>
-
-  <div>
-    {% for n in data %}
-    <div>{{n}}</div>
-    {% endfor %}
-  </div>
 
 
-<p><a href="/another">Go to the other page</a></p>
+<h1>Home Page:</h1>
 
-<form method="POST" action="/enter">
-<p>Zipcode: <input type="text" name="name"> <input type="submit" value="enter"></p>
+<h2>Search History:</h2>
+
+<table style="width:70%">
+  <tr>
+    <th>Zipcode</th>
+    <th>Time</th>
+    <th>Recommendation</th>
+  </tr>
+  {% for item in data %}
+  <tr>
+    <td>{{item[0]}}</td>
+    <td>{{item[1]}}</td>
+    <td>{{item[2]}}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+
+<p><a href="/home_recommendation">Get recommendation for home</a></p>
+
+
+<form action="/recommendation" method="POST">
+  <input type="zipcode" name="zipcode" placeholder="Zipcode">
+  <input type="submit" value="enter">
 </form>
 
 <p><a href="/logout">Log Out</a></p>
 
-</body>
 {% endblock %}
 
 </html>

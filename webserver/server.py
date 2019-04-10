@@ -20,6 +20,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask
 from flask import Flask, flash, request, render_template, g, redirect, Response, session, abort
+from sql_functions import check_login, get_history, get_recommendation
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -121,7 +122,7 @@ def home():
     return render_template('login.html')
 
   else:
-    message = 'Welcome, %s' % (session['username'])
+    message = 'Welcome, %s' % (session['name'])
     flash(message)
   # example of a database query
   #
@@ -130,12 +131,6 @@ def home():
   # for result in cursor:
   #   names.append(result['name'])  # can also be accessed using result[0]
   # cursor.close()
-
-  result = g.conn.execute("select name from users")
-  names = []
-  for row in result:
-    names.append(row[0])
-  g.conn.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -163,7 +158,10 @@ def home():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
+
+    username = session.get('username')
+    history = get_history(username)
+    context = dict(data = history)
 
 
   #
@@ -175,14 +173,20 @@ def home():
 @app.route('/login', methods=['POST'])
 def login():
   error = None
-  if request.form['username'] != 'user1' or \
-      request.form['home_zip'] != '10025':
-    error = 'Invalid credentials'
+
+  check = check_login(request.form['username'], request.form['home_zip'])
+
+  if check == 'error_combo':
+    error = 'Invalid username/home zipcode combination'
+
+  elif check == 'error_user':
+    error = 'Username not found'
 
   else:
     flash('You were successfully logged in!')
     session['username'] = request.form['username']
     session['home_zip'] = request.form['home_zip']
+    session['name'] = check
     return home()
 
   return render_template('login.html', error=error)
@@ -191,6 +195,8 @@ def login():
 def logout():
    # remove the username from the session if it is there
    session.pop('username', None)
+   session.pop('home_zip', None)
+   session.pop('name', None)
    return home()
 
 #
@@ -201,10 +207,20 @@ def logout():
 # notice that the functio name is another() rather than index()
 # the functions for each app.route needs to have different names
 #
-@app.route('/another')
-def another():
-  return render_template("anotherfile.html")
 
+@app.route('/home_recommendation')
+def home_recommendation():
+  home_zip = session.get('home_zip')
+  recommendation = get_recommendation(home_zip)
+  return render_template("recommendation.html", recommendation=recommendation, zipcode=home_zip)
+
+
+@app.route('/recommendation', methods=['POST'])
+def recommendation():
+  zipcode = request.form['zipcode']
+  recommendation = get_recommendation(zipcode)
+
+  return render_template("recommendation.html", recommendation=recommendation, zipcode=zipcode)
 
 # Example of adding new data to the database
 # @app.route('/add', methods=['POST'])

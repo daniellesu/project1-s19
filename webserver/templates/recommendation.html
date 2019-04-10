@@ -1,0 +1,21 @@
+<html>
+  <style>
+    body{
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+{% extends "layout.html" %}
+{% block body %}
+  <h1>Here's what you should wear today:</h1>
+
+  {{recommendation}}
+
+  {{zipcode}}
+
+
+
+{% endblock %}
+
+</html>
