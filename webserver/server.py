@@ -19,8 +19,8 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask
-from flask import Flask, flash, request, render_template, g, redirect, Response, session, abort
-from sql_functions import check_login, get_history, get_recommendation
+from flask import Flask, flash, request, render_template, g, redirect, Response, session, abort, url_for
+from sql_functions import check_login, get_history, get_recommendation, get_weather, approx_probability
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -49,15 +49,6 @@ DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
 # This line creates a database engine that knows how to connect to the URI above
 #
 engine = create_engine(DATABASEURI)
-
-
-# Here we create a test table and insert some values in it
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
 
 
@@ -102,8 +93,6 @@ def teardown_request(exception):
 # see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 
-@app.route('/')
-def home():
   """
   request is a special object that Flask provides to access web request information:
 
@@ -113,61 +102,26 @@ def home():
 
   See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
   """
-
   # DEBUG: this is debugging code to see what request looks like
-  print request.args
+  # print request.args
 
-  # LOG IN INFORMATION
+@app.route('/')
+def index():
   if session.get('username') == None:
-    return render_template('login.html')
+    return render_template('index.html')
 
   else:
-    message = 'Welcome, %s' % (session['name'])
-    flash(message)
-  # example of a database query
-  #
-  # cursor = g.conn.execute("SELECT name FROM test")
-  # names = []
-  # for result in cursor:
-  #   names.append(result['name'])  # can also be accessed using result[0]
-  # cursor.close()
+    return redirect(url_for('home'))
 
-  #
-  # Flask uses Jinja templates, which is an extension to HTML where you can
-  # pass data to a template and dynamically generate HTML based on the data
-  # (you can think of it as simple PHP)
-  # documentation: https://realpython.com/blog/python/primer-on-jinja-templating/
-  #
-  # You can see an example template in templates/index.html
-  #
-  # context are the variables that are passed to the template.
-  # for example, "data" key in the context variable defined below will be
-  # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #
-  #     # creates a <div> tag for each element in data
-  #     # will print:
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
+@app.route('/home')
+def home():
+  message = 'Welcome, %s' % (session['name'])
+  flash(message)
 
-    username = session.get('username')
-    history = get_history(username)
-    context = dict(data = history)
+  username = session.get('username')
+  history = get_history(username)
+  context = dict(data = history)
 
-
-  #
-  # render_template looks in the templates/ folder for files.
-  # for example, the below file reads template/index.html
-  #
   return render_template("home.html", **context)
 
 @app.route('/login', methods=['POST'])
@@ -176,20 +130,29 @@ def login():
 
   check = check_login(request.form['username'], request.form['home_zip'])
 
-  if check == 'error_combo':
+  if check == 'error-combo':
     error = 'Invalid username/home zipcode combination'
+    session.pop('username', None)
+    session.pop('home_zip', None)
+    session.pop('name', None)
+    return render_template('login.html', error=error)
 
   elif check == 'error_user':
     error = 'Username not found'
+    session.pop('username', None)
+    session.pop('home_zip', None)
+    session.pop('name', None)
+    return render_template('login.html', error=error)
 
   else:
     flash('You were successfully logged in!')
     session['username'] = request.form['username']
     session['home_zip'] = request.form['home_zip']
     session['name'] = check
-    return home()
+    # return home()
+    return redirect(url_for('home'))
 
-  return render_template('login.html', error=error)
+
 
 @app.route('/logout')
 def logout():
@@ -197,30 +160,35 @@ def logout():
    session.pop('username', None)
    session.pop('home_zip', None)
    session.pop('name', None)
-   return home()
+   return redirect(url_for('index'))
 
-#
-# This is an example of a different path.  You can see it at
-#
-#     localhost:8111/another
-#
-# notice that the functio name is another() rather than index()
-# the functions for each app.route needs to have different names
-#
 
 @app.route('/home_recommendation')
 def home_recommendation():
   home_zip = session.get('home_zip')
-  recommendation = get_recommendation(home_zip)
-  return render_template("recommendation.html", recommendation=recommendation, zipcode=home_zip)
+  degree, main_id, weather_description = get_weather(home_zip)
+  probability = approx_probability(main_id)
+  recommendation = get_recommendation(degree, probability)
+  data = {'zipcode': home_zip,
+          'degree': degree,
+          'weather_description': weather_description,
+          'recommendation': recommendation}
+
+  return render_template("recommendation.html", recommendation=recommendation, zipcode=home_zip, data=data)
 
 
 @app.route('/recommendation', methods=['POST'])
 def recommendation():
   zipcode = request.form['zipcode']
-  recommendation = get_recommendation(zipcode)
+  degree, main_id, weather_description = get_weather(zipcode)
+  probability = approx_probability(main_id)
+  recommendation = get_recommendation(degree, probability)
+  data = {'zipcode': zipcode,
+          'degree': degree,
+          'weather_description': weather_description,
+          'recommendation': recommendation}
 
-  return render_template("recommendation.html", recommendation=recommendation, zipcode=zipcode)
+  return render_template("recommendation.html", recommendation=recommendation, zipcode=zipcode, data=data)
 
 # Example of adding new data to the database
 # @app.route('/add', methods=['POST'])

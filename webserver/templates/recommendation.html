@@ -10,9 +10,12 @@
 {% block body %}
   <h1>Here's what you should wear today:</h1>
 
-  {{recommendation}}
+  <p> {{recommendation}} </p>
 
-  {{zipcode}}
+  <p> {{zipcode}}</p>
+
+  <h3> Weather description:</h3>
+  <p> {{data['weather_description']}}</p>
 
 
 
