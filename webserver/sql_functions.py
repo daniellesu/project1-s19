@@ -50,9 +50,9 @@ def get_history(username):
 
 #
 # Functions used for \recommendation
-    degree = int(degree)
 #
 def get_recommendation(degree, probability):
+    degree = int(degree)
     rec_num = 0
     recommendation = ''
     with engine.connect() as conn:
@@ -62,8 +62,9 @@ def get_recommendation(degree, probability):
                                 and probability = {probability}""".format(degree=degree, probability=probability)).fetchone()
         recommendation = conn.execute("""select comment\
                                 from recommendation \
-                                where rec_number = {rec_number}""".format(rec_number=rec_number[0])).fetchone()
-
+                                where rec_number = {rec_number}""".format(rec_number=rec_number['rec_number'])).fetchone()
+        if rec_number == None or recommendation == None:
+            return "uh oh someting's gone wrong"
 
         return recommendation['comment']
 
