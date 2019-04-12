@@ -1,0 +1,39 @@
+<html>
+  <style>
+    body{
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+{% extends "layout.html" %}
+{% block body %}
+  {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}</p>
+  {% endif %}
+
+  <h3>Create Your Weather Account:</h3>
+  <form action="/register/account" method="POST">
+    * Required Fields
+    <br><br>
+    <div>*Enter username: (you can use letters and numbers)
+    <br>
+    <input type="required" name="username" placeholder="Username"></div>
+    <br>
+    <div>*Set your home zipcode: (5 digit number)<br>
+    <input type="required" name="home_zip" placeholder="Home Zipcode"></div>
+    <br>
+    First name:
+    <div><input type="optional" name="name" placeholder="First Name"></div>
+    <br>
+    The combination of your username and home zipcode will serve as your login credentials.<br>
+    Your username must be unique to you.
+    <br><br>
+    <input type="submit" value="Create Account">
+  </form>
+
+  <br><br>
+  <p><a href="/login">Log in here</a></p>
+{% endblock %}
+
+</html>

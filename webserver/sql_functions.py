@@ -50,9 +50,9 @@ def get_history(username):
 
 #
 # Functions used for \recommendation
+    degree = int(degree)
 #
 def get_recommendation(degree, probability):
-    degree = int(degree)
     rec_num = 0
     recommendation = ''
     with engine.connect() as conn:
@@ -101,7 +101,51 @@ def approx_probability(main_id):
         probability = random.randint(75, 100)
     return probability
 
+def get_city(zipcode):
+    with engine.connect() as conn:
+        row = conn.execute("""select city, state_abbrev \
+                                from location \
+                                where zipcode = '{}' """.format(zipcode)).fetchone()
+        city = row['city']
+        state = row['state_abbrev']
+        return city, state
 
+def check_username(username):
+    with engine.connect() as conn:
+        cursor = conn.execute("""select username \
+                                from users \
+                                where username = '{}' """.format(username)).fetchone()
+        if cursor == None:
+            return 'username valid'
+
+        else:
+            return 'username invalid'
+
+def check_zipcode(zipcode):
+    with engine.connect() as conn:
+        cursor = conn.execute("""select * \
+                                from location \
+                                where zipcode = '{}' """.format(zipcode)).fetchone()
+        if cursor == None:
+            return 'zipcode invalid', None, None
+
+        else:
+            city = cursor['city']
+            state = cursor['state']
+            return 'zipcode valid', city, state
+
+# def insert_new_user(username, zipcode, name):
+#     cmd = 'INSERT INTO usernames VALUES (:name1), (:name2)';
+#     with engine.connect() as conn:
+
+# Example of adding new data to the database
+# @app.route('/add', methods=['POST'])
+# def add():
+#   name = request.form['name']
+#   print name
+#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
+#   g.conn.execute(text(cmd), name1 = name, name2 = name);
+#   return redirect('/')
 
 
 

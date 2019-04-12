@@ -18,9 +18,15 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask
-from flask import Flask, flash, request, render_template, g, redirect, Response, session, abort, url_for
-from sql_functions import check_login, get_history, get_recommendation, get_weather, approx_probability
+from flask import (
+                  Flask, flash, request, render_template, g,
+                  redirect, Response, session, abort, url_for
+                  )
+from sql_functions import (
+                          check_login, get_history, get_recommendation,
+                          get_weather, approx_probability, get_city,
+                          check_username, check_zipcode
+                          )
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -152,6 +158,35 @@ def login():
     # return home()
     return redirect(url_for('home'))
 
+#
+# Create new account page
+#
+@app.route('/register')
+def register():
+  return render_template('register.html')
+
+
+@app.route('/register/account', methods=['POST'])
+def register_account():
+  error = None
+  request.form['username']
+
+  if request.form['username']  == "" or request.form['home_zip'] == "":
+    error = 'Required field is missing.'
+    return render_template('register.html', error=error)
+
+  else:
+    username_valid = check_username(request.form['username'])
+    zipcode_valid, city, state = check_zipcode(request.form['home_zip'])
+
+    if username_valid == 'username invalid':
+      error = "That username is taken, please try another username. "
+
+    if zipcode_valid == 'zipcode invalid':
+      error = "That zipcode is invalid. Please enter a zipcode in the United States."
+
+    return render_template('register.html', error=error)
+
 
 
 @app.route('/logout')
@@ -163,41 +198,30 @@ def logout():
    return redirect(url_for('index'))
 
 
-@app.route('/home_recommendation')
-def home_recommendation():
-  home_zip = session.get('home_zip')
-  degree, main_id, weather_description = get_weather(home_zip)
+# Function for recommendation
+def render_rec(zipcode):
+  degree, main_id, weather_description = get_weather(zipcode)
   probability = approx_probability(main_id)
   recommendation = get_recommendation(degree, probability)
-  data = {'zipcode': home_zip,
-          'degree': degree,
+  city, state = get_city(zipcode)
+  data = {'zipcode': zipcode,
+          'city': city,
+          'state': state,
+          'degree': int(degree),
           'weather_description': weather_description,
           'recommendation': recommendation}
-
-  return render_template("recommendation.html", recommendation=recommendation, zipcode=home_zip, data=data)
+  return render_template("recommendation.html", data=data)
 
 
 @app.route('/recommendation', methods=['POST'])
 def recommendation():
   zipcode = request.form['zipcode']
-  degree, main_id, weather_description = get_weather(zipcode)
-  probability = approx_probability(main_id)
-  recommendation = get_recommendation(degree, probability)
-  data = {'zipcode': zipcode,
-          'degree': degree,
-          'weather_description': weather_description,
-          'recommendation': recommendation}
+  return render_rec(zipcode)
 
-  return render_template("recommendation.html", recommendation=recommendation, zipcode=zipcode, data=data)
-
-# Example of adding new data to the database
-# @app.route('/add', methods=['POST'])
-# def add():
-#   name = request.form['name']
-#   print name
-#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-#   g.conn.execute(text(cmd), name1 = name, name2 = name);
-#   return redirect('/')
+@app.route('/home_recommendation')
+def home_recommendation():
+  zipcode = session.get('home_zip')
+  return render_rec(zipcode)
 
 
 

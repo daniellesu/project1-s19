@@ -6,19 +6,14 @@
     }
   </style>
 
-{% extends "layout.html" %}
-{% block body %}
-  <h1>Here's what you should wear today:</h1>
+    {% extends "layout.html" %}
+    {% block body %}
+      <h1>Here's what you should wear today:</h1>
+        <p> It is {{data['degree']}} <span>&#176;</span> with {{data['weather_description']}} in {{data['city']}}, {{data['state']}} right now.</p>
 
-  <p> {{recommendation}} </p>
-
-  <p> {{zipcode}}</p>
-
-  <h3> Weather description:</h3>
-  <p> {{data['weather_description']}}</p>
+        <p> <b>Recommendation:</b> {{data['recommendation']}}</p>
 
 
-
-{% endblock %}
+    {% endblock %}
 
 </html>
