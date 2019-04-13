@@ -8,31 +8,34 @@
 
 {% extends "layout.html" %}
 {% block body %}
+
+  <h3>Register to get recommendations!</h3>
+  The combination of your username and home zipcode will serve as your login credentials.<br>
+  Your username must be unique to you. <br>
+
   {% if error %}
     <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
 
-  <h3>Create Your Weather Account:</h3>
   <form action="/register/account" method="POST">
-    * Required Fields
-    <br><br>
-    <div>*Enter username: (you can use letters and numbers)
-    <br>
-    <input type="required" name="username" placeholder="Username"></div>
-    <br>
-    <div>*Set your home zipcode: (5 digit number)<br>
-    <input type="required" name="home_zip" placeholder="Home Zipcode"></div>
-    <br>
-    First name:
-    <div><input type="optional" name="name" placeholder="First Name"></div>
-    <br>
-    The combination of your username and home zipcode will serve as your login credentials.<br>
-    Your username must be unique to you.
-    <br><br>
-    <input type="submit" value="Create Account">
+    <fieldset>
+      <legend>Create Account:</legend>
+      * Required Fields
+      <br><br>
+      <div>*Enter username: (use letters and numbers)<br>
+
+      <input type="text" name="username" placeholder="Username" pattern="[a-zA-Z0-9]{2,16}" title="Username must have between 2-16 characters (letters and numbers)" autocomplete="off" required></div><br>
+
+      <div>*Set your home zipcode: (5 digit number)<br>
+      <input type="text" name="home_zip" placeholder="Home Zipcode" pattern="[0-9]{5}" title="U.S. zipcodes have 5 digits" autocomplete="off" required></div><br>
+
+      First name:
+      <div><input type="text" name="firstname" placeholder="First Name" pattern="[a-zA-Z]+" title="First names can only be made of letters" autocomplete="off"></div><br>
+      <input type="submit" value="Create Account">
+    </fieldset>
   </form>
 
-  <br><br>
+  <br>
   <p><a href="/login">Log in here</a></p>
 {% endblock %}
 

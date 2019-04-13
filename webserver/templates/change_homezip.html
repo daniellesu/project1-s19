@@ -1,0 +1,23 @@
+<html>
+  <style>
+    body{
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+    {% extends "layout.html" %}
+    {% block body %}
+
+    Your home zipcode has been changed!
+
+    <h2>Log in Again Here:</h2>
+    <form action="/login" method="POST">
+      <input type="username" name="username" placeholder="Username" autocomplete="off" >
+      <input type="home_zip" name="home_zip" placeholder="Home Zipcode" autocomplete="off">
+      <input type="submit" value="Log in">
+    </form>
+
+    {% endblock %}
+
+</html>

@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-import random, requests
+import random, requests, datetime
 
 # Use the DB credentials you received by e-mail
 DB_USER = "ds3731"
@@ -39,58 +39,132 @@ def check_login(username, home_zip):
 #
 def get_history(username):
     with engine.connect() as conn:
-        cursor = conn.execute("""select zipcode, date_time, rec_number \
-                                from recommended \
-                                where username = %s\
-                                """, username)
+        history = conn.execute("""select r.zipcode, r.date_time, recommendation.comment \
+                                from recommended as r, recommendation \
+                                where r.username = '{}' \
+                                and r.rec_number = recommendation.rec_number
+                                order by date_time DESC \
+                                """.format(username)).fetchall()
+        # for row in cursor:
+        #     history.append(row)
 
-        #insert_1 = conn.execute(""" INSERT INTO user_input_location (username, zipcode, date_time) VALUES(%s, %s, %s) """, (username, zipcode, time))
-        
-        #insertion = conn.execute(""" INSERT INTO retrieve_temp_precip (date_time, degree, real_feel, probability, username, zipcode) VALUES (%s,%s,%s,%s,%s,%s)""", (date_time, degree, real_feel, probability, username, zipcode))
-
-
-        history = []
-        for row in cursor:
-            history.append(row)
         return history
+print get_history('user1')
 
-def insert1(username, zipcode, date_time):
+
+def insert_rec_history(username, zipcode, deg, prob, rec_num):
     with engine.connect() as conn:
-        insert_1 = conn.execute(""" INSERT INTO user_input_location (username, zipcode, date_time) VALUES(%s, %s, %s) """, (username, zipcode, time))
-        
-        return home
+        time = conn.execute("select current_timestamp::timestamp(0)").fetchone()['current_timestamp']
+        cmd1 = "insert into user_input_location \
+                (username, zipcode, date_time) \
+                values (%s, %s, %s);"
+        conn.execute(cmd1, (username, zipcode, time))
 
-def insert2(date_time, degree, probability, username, zipcode):
+        cmd2 = "insert into retrieve_temp_precip \
+                (degree, probability, username, zipcode, date_time) \
+                values (%s, %s, %s, %s, %s);"
+        conn.execute(cmd2, (deg, prob, username, zipcode, time))
+
+        cmd3 = "insert into recommended\
+                (username, zipcode, date_time, rec_number) \
+                values (%s, %s, %s, %s);"
+        conn.execute(cmd3, (username, zipcode, time, rec_num))
+#
+#Functions used for \register
+#
+def check_username(username):
     with engine.connect() as conn:
-        #did we put in real_feel???
-        insert_2 = conn.execute(""" INSERT INTO retrieve_temp_precip (date_time, degree, probability, username, zipcode) VALUES (%s,%s,%s,%s,%s)""", (date_time, degree, probability, username, zipcode))
+        cursor = conn.execute("""select username \
+                                from users \
+                                where username = '{}' """.format(username)).fetchone()
+        if cursor == None:
+            return 'username valid'
 
-        return home
+        else:
+            return 'username invalid'
 
-def insert3(username, zipcode, date_time, rec_number):
+def check_zipcode(zipcode):
     with engine.connect() as conn:
-        insert_3 = conn.execute(""" INSERT INTO recommended (username, zipcode, date_time, rec_number) VALUES (%s, %s, %s, %s)""", (username, zipcode, date_time, rec_number))
+        cursor = conn.execute("""select * \
+                                from location \
+                                where zipcode = '{}' """.format(zipcode)).fetchone()
+        if cursor == None:
+            return 'zipcode invalid', None, None
 
-        return home
+        else:
+            city = cursor['city']
+            state = cursor['state']
+            return 'zipcode valid', city, state
 
+def insert_user(username, home_zip, name):
+    with engine.connect() as conn:
+        if name == None or name == '':
+            cmd = "insert into users \
+                (username, home_zip) \
+                values ('{}', '{}')".format(username, home_zip)
+        else:
+            cmd = "insert into users \
+                    (username, home_zip, name) \
+                    values ('{}', '{}', '{}')".format(username, home_zip, name)
+
+        conn.execute(text(cmd))
+
+        # # check to see if it was inserted
+        # table = conn.execute("""select * \
+        #                         from users \
+        #                         where username = '{}' \
+        #                         """.format(username)).fetchall()
+        # return table
+
+#
+#Functions used for \change_account
+#
+def update_homezip(username, home_zip):
+    with engine.connect() as conn:
+        cmd = """update users \
+                set home_zip = '{}' \
+                where username = '{}' """.format(home_zip, username)
+        conn.execute(text(cmd))
+
+        # # check to see if it was inserted
+        # table = conn.execute("""select * \
+        #                         from users \
+        #                         where username = '{}' \
+        #                         """.format(username)).fetchall()
+        # return table
+
+def update_name(username, name):
+    with engine.connect() as conn:
+        cmd = """update users \
+                set name = '{}' \
+                where username = '{}' """.format(name, username)
+        conn.execute(text(cmd))
+
+        # # check to see if it was inserted
+        # table = conn.execute("""select * \
+        #                         from users \
+        #                         where username = '{}' \
+        #                         """.format(username)).fetchall()
+        # return table
+
+#
 #Functions used for \recommendation
 #
 def get_recommendation(degree, probability):
-    degree = int(degree)
-    rec_num = 0
-    recommendation = ''
     with engine.connect() as conn:
         rec_number = conn.execute("""select rec_number \
                                 from forms \
-                                where degree = {degree} \
-                                and probability = {probability}""".format(degree=degree, probability=probability)).fetchone()
-        recommendation = conn.execute("""select comment\
+                                where degree = {} \
+                                and probability = {}""".format(degree, probability)).fetchone()['rec_number']
+
+        recommendation = conn.execute("""select comment \
                                 from recommendation \
-                                where rec_number = {rec_number}""".format(rec_number=rec_number['rec_number'])).fetchone()
+                                where rec_number = {}""".format(rec_number)).fetchone()['comment']
+
         if rec_number == None or recommendation == None:
             return "uh oh someting's gone wrong"
 
-        return recommendation['comment']
+        return recommendation, rec_number
 
 
 def get_weather(zipcode):
@@ -128,11 +202,10 @@ def approx_probability(main_id):
     return probability
 
 def get_image(main_id):
-    
     if main_id >= 200 and main_id <300:
         image_id = '11d'
         icon = 'http://openweathermap.org/img/w/11d.png'
-    
+
     if main_id >=300 and main_id<400:
         image_id = '09d'
         icon = 'http://openweathermap.org/img/w/09d.png'
@@ -168,29 +241,6 @@ def get_city(zipcode):
         state = row['state_abbrev']
         return city, state
 
-def check_username(username):
-    with engine.connect() as conn:
-        cursor = conn.execute("""select username \
-                                from users \
-                                where username = '{}' """.format(username)).fetchone()
-        if cursor == None:
-            return 'username valid'
-
-        else:
-            return 'username invalid'
-
-def check_zipcode(zipcode):
-    with engine.connect() as conn:
-        cursor = conn.execute("""select * \
-                                from location \
-                                where zipcode = '{}' """.format(zipcode)).fetchone()
-        if cursor == None:
-            return 'zipcode invalid', None, None
-
-        else:
-            city = cursor['city']
-            state = cursor['state']
-            return 'zipcode valid', city, state
 
 # def insert_new_user(username, zipcode, name):
 #     cmd = 'INSERT INTO usernames VALUES (:name1), (:name2)';

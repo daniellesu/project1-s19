@@ -25,7 +25,9 @@ from flask import (
 from sql_functions import (
                           check_login, get_history, get_recommendation,
                           get_weather, approx_probability, get_city,
-                          check_username, check_zipcode, get_image
+                          check_username, check_zipcode, get_image,
+                          insert_user, update_homezip, update_name,
+                          insert_rec_history
                           )
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -119,21 +121,25 @@ def index():
   else:
     return redirect(url_for('home'))
 
+
 @app.route('/home')
 def home():
-  #message = 'Welcome, %s' % (session['name'])
-  #flash(message)
+  if session.get('username') == None:
+    return redirect(url_for('index'))
 
   username = session.get('username')
-
   history = get_history(username)
 
-  context = dict(data = history)
-  
-  #insert_2 = insert2('2019-03-10 15:08:23', 44, 44, 65,'user2', 30411)
+  if session.get('name') != None:
+    name = session.get('name')
 
+  else:
+    name = username
+
+  context = dict(data=history, name=name)
 
   return render_template("home.html", **context)
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -159,8 +165,10 @@ def login():
     flash('You were successfully logged in!')
     session['username'] = request.form['username']
     session['home_zip'] = request.form['home_zip']
-    session['name'] = check
-    # return home()
+
+    if check != None:
+      session['name'] = check
+
     return redirect(url_for('home'))
 
 #
@@ -174,24 +182,29 @@ def register():
 @app.route('/register/account', methods=['POST'])
 def register_account():
   error = None
-  request.form['username']
+  username = request.form['username']
+  home_zip = request.form['home_zip']
+  name = request.form['firstname']
 
-  if request.form['username']  == "" or request.form['home_zip'] == "":
-    error = 'Required field is missing.'
+  username_valid = check_username(request.form['username'])
+  zipcode_valid, city, state = check_zipcode(request.form['home_zip'])
+
+  if username_valid == 'username invalid':
+    error = "That username is taken, please try another username."
+    return render_template('register.html', error=error)
+
+  if zipcode_valid == 'zipcode invalid':
+    error = "That zipcode is invalid. Please enter a zipcode in the United States."
     return render_template('register.html', error=error)
 
   else:
-    username_valid = check_username(request.form['username'])
-    zipcode_valid, city, state = check_zipcode(request.form['home_zip'])
+    insert_user(username, home_zip, name)
+    return redirect(url_for('register_success'))
 
-    if username_valid == 'username invalid':
-      error = "That username is taken, please try another username. "
 
-    if zipcode_valid == 'zipcode invalid':
-      error = "That zipcode is invalid. Please enter a zipcode in the United States."
-
-    return render_template('register.html', error=error)
-
+@app.route('/register/success')
+def register_success():
+  return render_template('register_success.html')
 
 
 @app.route('/logout')
@@ -202,22 +215,66 @@ def logout():
    session.pop('name', None)
    return redirect(url_for('index'))
 
+@app.route('/change_account')
+def change_account():
+  username = session.get('username')
+  home_zip = session.get('home_zip')
+  name = session.get('name')
+  data = {'username': username,
+          'home_zip': home_zip,
+          'name': name}
+  return render_template('change_account.html', data=data)
+
+
+@app.route('/change_homezip', methods=['POST'])
+def change_homezip():
+  username = session.get('username')
+  new_home_zip = request.form['home_zip']
+
+  # Function to update home_zip
+  update_homezip(username, new_home_zip)
+
+  session.clear()
+  # session.pop('username', None)
+  # session.pop('home_zip', None)
+  # session.pop('name', None)
+
+  return render_template('change_homezip.html')
+
+@app.route('/change_name', methods=['POST'])
+def change_name():
+  username = session.get('username')
+  new_name = request.form['firstname']
+
+  # Function to update name
+  update_name(username, new_name)
+
+  session.clear()
+  # session.pop('username', None)
+  # session.pop('home_zip', None)
+  # session.pop('name', None)
+
+  return render_template('change_name.html')
 
 # Function for recommendation
 def render_rec(zipcode):
+  username = session.get('username')
   degree, main_id, weather_description = get_weather(zipcode)
+  degree = int(degree)
   probability = approx_probability(main_id)
-  recommendation = get_recommendation(degree, probability)
+  recommendation, rec_number = get_recommendation(degree, probability)
   icon = get_image(main_id)
   city, state = get_city(zipcode)
   data = {'zipcode': zipcode,
           'city': city,
           'state': state,
-          'degree': int(degree),
+          'degree': degree,
           'icon': icon,
-          #'real_feel': int(degree),
           'weather_description': weather_description,
           'recommendation': recommendation}
+
+  insert_rec_history(username, zipcode, degree, probability, rec_number)
+
   return render_template("recommendation.html", data=data)
 
 
