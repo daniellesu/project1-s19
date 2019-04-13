@@ -25,7 +25,7 @@ from flask import (
 from sql_functions import (
                           check_login, get_history, get_recommendation,
                           get_weather, approx_probability, get_city,
-                          check_username, check_zipcode
+                          check_username, check_zipcode, get_image
                           )
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -121,12 +121,17 @@ def index():
 
 @app.route('/home')
 def home():
-  message = 'Welcome, %s' % (session['name'])
-  flash(message)
+  #message = 'Welcome, %s' % (session['name'])
+  #flash(message)
 
   username = session.get('username')
+
   history = get_history(username)
+
   context = dict(data = history)
+  
+  #insert_2 = insert2('2019-03-10 15:08:23', 44, 44, 65,'user2', 30411)
+
 
   return render_template("home.html", **context)
 
@@ -203,11 +208,14 @@ def render_rec(zipcode):
   degree, main_id, weather_description = get_weather(zipcode)
   probability = approx_probability(main_id)
   recommendation = get_recommendation(degree, probability)
+  icon = get_image(main_id)
   city, state = get_city(zipcode)
   data = {'zipcode': zipcode,
           'city': city,
           'state': state,
           'degree': int(degree),
+          'icon': icon,
+          #'real_feel': int(degree),
           'weather_description': weather_description,
           'recommendation': recommendation}
   return render_template("recommendation.html", data=data)

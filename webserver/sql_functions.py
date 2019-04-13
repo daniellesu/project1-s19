@@ -43,13 +43,37 @@ def get_history(username):
                                 from recommended \
                                 where username = %s\
                                 """, username)
+
+        #insert_1 = conn.execute(""" INSERT INTO user_input_location (username, zipcode, date_time) VALUES(%s, %s, %s) """, (username, zipcode, time))
+        
+        #insertion = conn.execute(""" INSERT INTO retrieve_temp_precip (date_time, degree, real_feel, probability, username, zipcode) VALUES (%s,%s,%s,%s,%s,%s)""", (date_time, degree, real_feel, probability, username, zipcode))
+
+
         history = []
         for row in cursor:
             history.append(row)
         return history
 
-#
-# Functions used for \recommendation
+def insert1(username, zipcode, date_time):
+    with engine.connect() as conn:
+        insert_1 = conn.execute(""" INSERT INTO user_input_location (username, zipcode, date_time) VALUES(%s, %s, %s) """, (username, zipcode, time))
+        
+        return home
+
+def insert2(date_time, degree, probability, username, zipcode):
+    with engine.connect() as conn:
+        #did we put in real_feel???
+        insert_2 = conn.execute(""" INSERT INTO retrieve_temp_precip (date_time, degree, probability, username, zipcode) VALUES (%s,%s,%s,%s,%s)""", (date_time, degree, probability, username, zipcode))
+
+        return home
+
+def insert3(username, zipcode, date_time, rec_number):
+    with engine.connect() as conn:
+        insert_3 = conn.execute(""" INSERT INTO recommended (username, zipcode, date_time, rec_number) VALUES (%s, %s, %s, %s)""", (username, zipcode, date_time, rec_number))
+
+        return home
+
+#Functions used for \recommendation
 #
 def get_recommendation(degree, probability):
     degree = int(degree)
@@ -76,10 +100,11 @@ def get_weather(zipcode):
     json_object = result.json()
     temp_kelvin = float(json_object['main']['temp'])
     temp_fr = (temp_kelvin - 273.15) * 1.8 + 32
+    #real_feel = temp_fr
     main_id = json_object['weather'][0]['id']
     weather_description = json_object['weather'][0]['description']
 
-    return temp_fr, main_id, weather_description
+    return temp_fr, main_id, weather_description #, real_feel
 
 
 def approx_probability(main_id):
@@ -101,6 +126,38 @@ def approx_probability(main_id):
     if main_id >= 600 and main_id < 700:
         probability = random.randint(75, 100)
     return probability
+
+def get_image(main_id):
+    
+    if main_id >= 200 and main_id <300:
+        image_id = '11d'
+        icon = 'http://openweathermap.org/img/w/11d.png'
+    
+    if main_id >=300 and main_id<400:
+        image_id = '09d'
+        icon = 'http://openweathermap.org/img/w/09d.png'
+
+    if main_id >= 500 and main_id<600:
+        image_id = '10d'
+        icon = 'http://openweathermap.org/img/w/10d.png'
+
+    if main_id >= 600 and main_id <700:
+        image_id = '13d'
+        icon = 'http://openweathermap.org/img/w/13d.png'
+
+    if main_id >= 700 and main_id <800:
+        image_id = '50d'
+        icon = 'http://openweathermap.org/img/w/50d.png'
+
+    if main_id== 800:
+        image_id = '01d'
+        icon = 'http://openweathermap.org/img/w/01d.png'
+
+    if main_id >800:
+        image_id = '02d'
+        icon = 'http://openweathermap.org/img/w/02d.png'
+
+    return icon
 
 def get_city(zipcode):
     with engine.connect() as conn:
