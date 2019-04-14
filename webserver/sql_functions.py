@@ -49,7 +49,6 @@ def get_history(username):
         #     history.append(row)
 
         return history
-print get_history('user1')
 
 
 def insert_rec_history(username, zipcode, deg, prob, rec_num):
