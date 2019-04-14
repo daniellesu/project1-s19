@@ -132,7 +132,6 @@ def home():
 
   if session.get('name') != None:
     name = session.get('name')
-
   else:
     name = username
 
@@ -259,6 +258,12 @@ def change_name():
 # Function for recommendation
 def render_rec(zipcode):
   username = session.get('username')
+  check = check_zipcode(zipcode)
+
+  if check == "zipcode invalid":
+    error = "zipcode invalid"
+    return redirect(url_for('home'), error=error)
+
   degree, main_id, weather_description = get_weather(zipcode)
   degree = int(degree)
   probability = approx_probability(main_id)

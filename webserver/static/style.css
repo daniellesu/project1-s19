@@ -1,21 +1,11 @@
 
 body,h1,h2,h3,h4,h5,h6 {font-family: "Arial", sans-serif;}
-body, html {
-  height: 100%;
-  color: #777;
-  line-height: 1.8;
+
+body {
+  background-color: lightblue;
 }
 
-/* Create a Parallax Effect */
-.bgimg-1 {
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: repeat;
-  background-size: cover;
-}
-
-/* First image (Logo. Full height) */
-.bgimg-1 {
-  background-image: url('/bg-clouds.jpg');
-  min-height: 100%;
+h1 {
+  color: navy;
+  margin-left: 20px;
 }
