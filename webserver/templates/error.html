@@ -1,0 +1,10 @@
+<!doctype html>
+<title>What to wear today?</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+{% if error %}
+<p class=error><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+    <p><a href="/home">Go back to your homepage</a></p>
+{% block body %}{% endblock %}

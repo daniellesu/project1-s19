@@ -10,9 +10,6 @@ To run locally
 
 Go to http://localhost:8111 in your browser
 
-
-A debugger such as "pdb" may be helpful for debugging.
-Read about it online.
 """
 
 import os
@@ -33,26 +30,12 @@ from sql_functions import (
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-
-# XXX: The Database URI should be in the format of:
-#
-#     postgresql://USER:PASSWORD@<IP_OF_POSTGRE_SQL_SERVER>/<DB_NAME>
-#
-# For example, if you had username ewu2493, password foobar, then the following line would be:
-#
-#     DATABASEURI = "postgresql://ewu2493:foobar@<IP_OF_POSTGRE_SQL_SERVER>/postgres"
-#
-# For your convenience, we already set it to the class database
-
-# Use the DB credentials you received by e-mail
 DB_USER = "ds3731"
 DB_PASSWORD = "wnw0NiHKMr"
 
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/w4111"
-
-
 #
 # This line creates a database engine that knows how to connect to the URI above
 #
@@ -234,9 +217,6 @@ def change_homezip():
   update_homezip(username, new_home_zip)
 
   session.clear()
-  # session.pop('username', None)
-  # session.pop('home_zip', None)
-  # session.pop('name', None)
 
   return render_template('change_homezip.html')
 
@@ -249,9 +229,6 @@ def change_name():
   update_name(username, new_name)
 
   session.clear()
-  # session.pop('username', None)
-  # session.pop('home_zip', None)
-  # session.pop('name', None)
 
   return render_template('change_name.html')
 
@@ -259,38 +236,42 @@ def change_name():
 def render_rec(zipcode):
   username = session.get('username')
   check = check_zipcode(zipcode)
+  print check
 
-  if check == "zipcode invalid":
+  if check[0] == "zipcode invalid":
     error = "zipcode invalid"
-    return redirect(url_for('home'), error=error)
+    return render_template('error.html', error=error)
 
-  degree, main_id, weather_description = get_weather(zipcode)
-  degree = int(degree)
-  probability = approx_probability(main_id)
-  recommendation, rec_number = get_recommendation(degree, probability)
-  icon = get_image(main_id)
-  city, state = get_city(zipcode)
-  data = {'zipcode': zipcode,
-          'city': city,
-          'state': state,
-          'degree': degree,
-          'icon': icon,
-          'weather_description': weather_description,
-          'recommendation': recommendation}
+  else:
+    degree, main_id, weather_description = get_weather(zipcode)
+    degree = int(degree)
+    probability = approx_probability(main_id)
+    recommendation, rec_number = get_recommendation(degree, probability)
+    icon = get_image(main_id)
+    city, state = get_city(zipcode)
+    data = {'zipcode': zipcode,
+            'city': city,
+            'state': state,
+            'degree': degree,
+            'icon': icon,
+            'weather_description': weather_description,
+            'recommendation': recommendation}
 
-  insert_rec_history(username, zipcode, degree, probability, rec_number)
+    insert_rec_history(username, zipcode, degree, probability, rec_number)
 
-  return render_template("recommendation.html", data=data)
+    return render_template("recommendation.html", data=data)
 
 
 @app.route('/recommendation', methods=['POST'])
 def recommendation():
   zipcode = request.form['zipcode']
+  print zipcode
   return render_rec(zipcode)
 
 @app.route('/home_recommendation')
 def home_recommendation():
   zipcode = session.get('home_zip')
+
   return render_rec(zipcode)
 
 
