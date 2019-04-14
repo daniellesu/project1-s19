@@ -1,6 +1,6 @@
 <!doctype html>
 <title>What to wear today?</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -11,4 +11,5 @@
     </ul>
   {% endif %}
 {% endwith %}
+
 {% block body %}{% endblock %}
