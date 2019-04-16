@@ -12,7 +12,7 @@
   <div id="right">
     <h3>get recommendation for another zipcode</h3>
     <form action="/recommendation" method="POST">
-      <input type="zipcode" name="zipcode" placeholder="Zipcode">
+      <input type="zipcode" name="zipcode" placeholder="Zipcode" pattern="[0-9]{5}" title="U.S. zipcodes have 5 digits" required>
       <input type="submit" value="enter">
     </form>
   </div>
