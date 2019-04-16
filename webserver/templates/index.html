@@ -1,31 +1,41 @@
-<html>
-  <style>
-    h2{
-      font-family: arial
-      background-color: red;
-    }
-
-    body{
-      font-size: 15pt;
-      font-family: arial;
-      background-color: lightblue;
-    }
-  </style>
 
 {% extends "layout.html" %}
-{% block body %}
-  <h2>Find out what to wear today</h2>
+{% block title %} Home{% endblock %}
+<link rel="stylesheet" href="static/style.css" type = "text/css">
+{% block style %}
+  <style>
+    h1 {
+      font-size: 3.5em;
+      border: 0.1em solid #ffca4b;
+      margin-top: 3em;
+      text-align: center;
+      letter-spacing: 0.3em;
+      padding-top: 0.3em;
+      padding-bottom: 0.3em;
+    }
+    h2 {
+      margin-top: .5em;
+      text-align: center;
+    }
 
-  <h2>Log in Here:</h2>
-  <form action="/login" method="POST">
-    <input type="username" name="username" placeholder="Username" autocomplete="off">
-    <input type="home_zip" name="home_zip" placeholder="Home Zipcode" autocomplete="off">
-    <input type="submit" value="Log in">
-  </form>
 
-  <p><a href="/register">Create Account</a></p>
-
-
+  </style>
 {% endblock %}
 
-</html>
+{% block body %}
+  <h1>weather vane</h1>
+  <h2>find out weather it's sunny and what to wear today</h2>
+
+  <div id="right">
+    <h3>log in here:</h3>
+    <form action="/login" method="POST">
+      <input type="text" name="username" placeholder="Username" autocomplete="off"><br>
+      <input type="text" name="home_zip" placeholder="Home Zipcode" autocomplete="off"><br>
+      <input type="submit" value="log in">
+    </form>
+  </div>
+
+  <div id="left">
+    <h3><a href="/register">create a new account</a></h3>
+  </div>
+{% endblock %}

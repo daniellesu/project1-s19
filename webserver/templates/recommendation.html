@@ -1,22 +1,24 @@
 <html>
+  {% extends "layout.html" %}
+  <link rel="stylesheet" href="static/style.css" type = "text/css">
   <style>
     body{
-      font-size: 15pt;
-      font-family: arial;
+      background-image: url("bg-clouds.jpg");
+      background-repeat: repeat-x;
     }
   </style>
 
-    {% extends "layout.html" %}
-    {% block body %}
-      <h1>Here's what you should wear today:</h1>
-        <p> It is {{data['degree']}} <span>&#176;</span> with {{data['weather_description']}} in {{data['city']}}, {{data['state']}} right now.</p>
+  {% block body %}
 
-        <p> <b>Recommendation:</b> {{data['recommendation']}}</p>
+    <h1>Here's what you should wear today:</h1>
+      <p> It is {{data['degree']}} <span>&#176;</span> with {{data['weather_description']}} in {{data['city']}}, {{data['state']}} right now.</p>
 
-        <img src = {{data['icon']}}>
+      <p> <b>Recommendation:</b> {{data['recommendation']}}</p>
 
-      <p><a href="/home">Go back to your homepage</a></p>
-    {% endblock %}
+      <img src = {{data['icon']}}>
+
+    <p><a href="/home">Go back to your homepage</a></p>
+  {% endblock %}
 
 
 

@@ -1,45 +1,47 @@
-<html>
-<!--   <style>
-    body{
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style> -->
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 {% extends "layout.html" %}
-{% block body %}
+{% block style %}
+<style type="text/css">
 
-
-<h1>{{name}}'s Home Page:</h1>
-
-<h2>Search History:</h2>
-
-<table style="width:70%">
-  <tr>
-    <th>Zipcode</th>
-    <th>Time</th>
-    <th>Recommendation</th>
-  </tr>
-  {% for item in data %}
-  <tr>
-    <td>{{item[0]}}</td>
-    <td>{{item[1]}}</td>
-    <td>{{item[2]}}</td>
-  </tr>
-  {% endfor %}
-</table>
-
-
-<p><a href="/home_recommendation">Get recommendation for home</a></p>
-
-
-<form action="/recommendation" method="POST">
-  <input type="zipcode" name="zipcode" placeholder="Zipcode">
-  <input type="submit" value="enter">
-</form>
-
-<p><a href="/logout">Log Out</a></p>
-<p><a href="/change_account">Change Account Information</a></p>
+</style>
 {% endblock %}
 
-</html>
+{% block body %}
+  <h2>{{name}}'s home page</h2>
+
+  <div id="left">
+    <h3><a href="/home_recommendation">get recommendation for home</a></h3>
+    <br><br><br>
+  </div>
+
+  <div id="right">
+    <h3>get recommendation for another zipcode</h3>
+    <form action="/recommendation" method="POST">
+      <input type="zipcode" name="zipcode" placeholder="Zipcode">
+      <input type="submit" value="enter">
+    </form>
+  </div>
+
+  <div class="history">
+    <h3>your search history:</h3>
+    <table style="width:70%">
+      <tr>
+        <th>Zipcode</th>
+        <th>Time</th>
+        <th>Recommendation</th>
+      </tr>
+      {% for item in data %}
+      <tr>
+        <td>{{item[0]}}</td>
+        <td>{{item[1]}}</td>
+        <td>{{item[2]}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div>
+    <h4><a href="/change_account">change your account information</a></h4>
+    <h4><a href="/logout">log out</a></h4>
+  </div>
+{% endblock %}
+

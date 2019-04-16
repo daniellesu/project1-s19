@@ -8,27 +8,35 @@
 
     {% extends "layout.html" %}
     {% block body %}
+    <div>
+      <h2>Your Account Information: </h2>
+      <h4 style="font-weight:normal">Your current zipcode: {{data['home_zip']}}<br>
+      Your current name: {{data['name']}}</h4>
+    </div>
+      <br><br>
+      <div>
+        <form action="/change_homezip" method="POST">
+          <fieldset>
+            <legend>change your home zipcode:</legend>
+            <input type="text" name="home_zip" placeholder="New Home Zipcode" pattern="[0-9]{5}" title="U.S. zipcodes have 5 digits" autocomplete="off" required>
+            <input type="submit" value="enter">
+          </fieldset>
+        </form>
+      </div>
+      <br>
+      <div>
+        <form action="/change_name" method="POST">
+          <fieldset>
+            <legend>change your name:</legend>
+            <input type="text" name="firstname" placeholder="New First Name" pattern="[a-zA-Z]+" title="First names can only be made of letters" autocomplete="off" required>
+            <input type="submit" value="enter">
+          </fieldset>
+        </form>
+      </div>
 
-    <h2>Account Information: </h2>
-      Your current zipcode: {{data['home_zip']}} <br>
-      Your current name: {{data['name']}}<br><br>
-
-      <form action="/change_homezip" method="POST">
-        <fieldset>
-          <legend>Change your home zipcode:</legend>
-          <input type="text" name="home_zip" placeholder="New Home Zipcode" pattern="[0-9]{5}" title="U.S. zipcodes have 5 digits" autocomplete="off" required></div>
-          <input type="submit" value="enter">
-        </fieldset>
-      </form>
-
-      <form action="/change_name" method="POST">
-        <fieldset>
-          <legend>Change your name:</legend>
-          <input type="text" name="firstname" placeholder="New First Name" pattern="[a-zA-Z]+" title="First names can only be made of letters" autocomplete="off" required>
-          <input type="submit" value="enter">
-        </fieldset>
-      </form>
-
+      <div id="bottom_links">
+        <h4><a href="/home">back to home page</a></h4>
+      </div>
     {% endblock %}
 
 

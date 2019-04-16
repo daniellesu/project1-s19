@@ -1,11 +1,151 @@
 
-body,h1,h2,h3,h4,h5,h6 {font-family: arial, sans-serif;}
+body,h1,h2,h3,h4,h5,h6,p,a {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
 
 body {
-  background-color: lightblue;
+/*  background-color: mediumseagreen*/
+  background-color: #009B77;
+  font-size: 100%;
+  margin: 25px 50px 50px;
 }
 
 h1 {
-  color: navy;
-  margin-left: 20px;
+/*  color: #FFE4E1;*/
+  color: #F7CAC9;
+  font-size: 3em;
+/*  border: 1px solid goldenrod;*/
+  text-align: center;
+  letter-spacing: 0.1em;
 }
+
+h2 {
+    font-size: 1.875em;
+    color: #F7CAC9;
+}
+
+h3{
+    font-size: 1.6em;
+    color: #ffca4b;
+}
+h4, legend{
+    font-size: 1.2em;
+    color: #ffca4b;
+}
+h5 {
+    font-style: normal;
+    color: #ffca4b;
+    font-size: 1.2em;
+    display: inline;
+}
+
+a{
+  color: #ffca4b;
+}
+
+p {
+  font-size: 1em;
+  display: inline;
+}
+
+input{
+    padding: 10px 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ffca4b;
+    outline: none;
+    font-size:0.875em;
+}
+
+input[type=button], input[type=submit]{
+    padding: 10px 5px;
+    background-color: #ffca4b;
+    box-sizing: border-box;
+    outline: none;
+    font-size:0.875em;
+}
+
+fieldset{
+    padding-top: 0.4em;
+    padding-bottom: 0.625em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    border: 6px groove #F7CAC9;
+}
+tr:hover{
+    background-color: #FFE4E1;
+    width: 100%;
+}
+
+th {
+  background-color: #FFE4E1;
+  text-align: left;
+  vertical-align: bottom;
+}
+
+td, th{
+    padding: 10px 15px;
+}
+ul{
+    list-style: none;
+    list-style-position: inside
+}
+li {
+  padding-left: 16px;
+}
+
+#page-container {
+  position: relative;
+  min-height: 100vh;
+}
+#content-wrap {
+  padding-bottom: 2.5rem;    /* Footer height */
+}
+#footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    font-size: .7em;
+    color: white;
+}
+
+.centered{
+    position:fixed;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.history{
+    padding-top: 150px;
+    padding-bottom: 25px;
+}
+
+#left{
+    float: left;
+    width: 50%;
+}
+
+#right{
+    float: right;
+    width: 50%;
+}
+
+#bottom_links{
+    padding-top: 50px;
+}
+
+.flashes {
+/*    margin: 1em;*/
+    padding: 1em;
+    background: #FFE4E1;
+    border: 2px solid #FF6347;
+}
+
+
+.error{
+    font-color: #FF6347
+    font-size: 1.2em;
+}
+input.danger { color: #cc2f2e; }
+
+input[type=submit] { align-self: start; min-width: 10em; }
+

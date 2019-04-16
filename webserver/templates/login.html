@@ -1,12 +1,13 @@
 <html>
-  <style>
-    body{
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style>
-
 {% extends "layout.html" %}
+<link rel="stylesheet" href="static/style.css" type = "text/css">
+<style>
+  body{
+    font-size: 15pt;
+    font-family: arial;
+  }
+</style>
+
 {% block body %}
   <h1>Sign in here:</h1>
   {% if error %}
@@ -22,8 +23,10 @@
     </form>
 
   </div>
-
-
+  <div></div>
+  <div id="bottom_links">
+    <h3><a href="/register">create a new account</a></h3>
+  </div>
 {% endblock %}
 
 </html>

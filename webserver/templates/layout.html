@@ -1,15 +1,40 @@
 <!doctype html>
-<title>What to wear today?</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<html lang="en">
+    <head>
+        {% block head %}
+        <link rel="stylesheet" href="static/style.css" type = "text/css"/>
+        <title>Weather Vane - {% block title %}{% endblock %}</title>
+        {% block style %}{% endblock %}
+        {% endblock %}
+    </head>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+    <body>
+        <div id="page-container">
+            <div id="content-wrap">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                          <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
 
-{% block body %}{% endblock %}
+                <div id="content">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div id="footer">
+                    By Danielle Su (ds3731) and Shadi Fadaee (sf2917)<br>
+                    Databases W4111
+            </div>
+        </div>
+    </body>
+</html>
+
+
+
+
+
