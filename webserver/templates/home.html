@@ -1,12 +1,8 @@
 {% extends "layout.html" %}
-{% block style %}
-<style type="text/css">
 
-</style>
-{% endblock %}
 
 {% block body %}
-  <h2>{{name}}'s home page</h2>
+  <h1>{{name}}'s home page</h1>
 
   <div id="left">
     <h3><a href="/home_recommendation">get recommendation for home</a></h3>
@@ -20,8 +16,13 @@
       <input type="submit" value="enter">
     </form>
   </div>
-
   <div class="history">
+    <h6>stats about you:</h6><br>
+      <h5>Your most searched city is <font color="#FF6347">{{top_city}}, {{top_state}}</font><br>
+      You have looked up the weather for <font color="#FF6347">{{num_states}}</font> different states.
+      </h5>
+  </div>
+  <div>
     <h3>your search history:</h3>
     <table style="width:70%">
       <tr>
@@ -39,7 +40,7 @@
     </table>
   </div>
 
-  <div>
+  <div id="bottom_links">
     <h4><a href="/change_account">change your account information</a></h4>
     <h4><a href="/logout">log out</a></h4>
   </div>

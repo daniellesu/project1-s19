@@ -6,7 +6,7 @@
 
 {% block body %}
 
-  <h2>Register now to get weather and clothing recommendations on the spot!</h2>
+  <h2>Register now to get weather and clothing recommendations today!</h2>
   <p><li>The combination of your username and home zipcode will serve as your login credentials.</li>
   <li>Your username must be unique to you and it is case-sensitive.</li>
   <li>Our application is currently only available for looking up weather in the U.S. so your home zipcode must be a U.S. zipcode.</li>
@@ -17,7 +17,8 @@
     <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
   </div>
-  <form action="/register/account" method="POST">
+  <br><br>
+  <form action="/register_account" method="POST">
     <fieldset>
       <legend>Create Account:</legend>
       <p>* Required Fields</p>

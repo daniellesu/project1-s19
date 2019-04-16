@@ -1,25 +1,18 @@
 <html>
   {% extends "layout.html" %}
-  <link rel="stylesheet" href="static/style.css" type = "text/css">
-  <style>
-    body{
-      background-image: url("bg-clouds.jpg");
-      background-repeat: repeat-x;
-    }
-  </style>
 
   {% block body %}
 
     <h1>Here's what you should wear today:</h1>
-      <p> It is {{data['degree']}} <span>&#176;</span> with {{data['weather_description']}} in {{data['city']}}, {{data['state']}} right now.</p>
+    <img src = {{data['icon']}} width="75" height="75">
+    <h5> It is {{data['degree']}} <span>&#176;</span> with {{data['weather_description']}} in {{data['city']}}, {{data['state']}} right now.</h5>
+    <br>
+    <h5> Recommendation: {{data['recommendation']}}</h5>
 
-      <p> <b>Recommendation:</b> {{data['recommendation']}}</p>
-
-      <img src = {{data['icon']}}>
-
-    <p><a href="/home">Go back to your homepage</a></p>
+    <div id="bottom_links">
+      <h4><a href="/home">go back to your homepage</a></h4>
+    </div>
   {% endblock %}
-
 
 
 </html>

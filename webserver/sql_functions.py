@@ -240,19 +240,33 @@ def get_city(zipcode):
         state = row['state_abbrev']
         return city, state
 
+def get_topcity(username):
+    with engine.connect() as conn:
+        results = conn.execute("""select  l.city, l.state \
+                                from recommended as r, location as l \
+                                where r.zipcode=l.zipcode \
+                                and r.username = '{}' \
+                                group by l.city, l.state \
+                                order by count(*) DESC\
+                                limit 1""".format(username)).fetchone()
+        top_city = results['city']
+        top_state = results['state']
+        return top_city, top_state
 
-# def insert_new_user(username, zipcode, name):
-#     cmd = 'INSERT INTO usernames VALUES (:name1), (:name2)';
-#     with engine.connect() as conn:
+top_city, top_state = get_topcity('user1')
 
-# Example of adding new data to the database
-# @app.route('/add', methods=['POST'])
-# def add():
-#   name = request.form['name']
-#   print name
-#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-#   g.conn.execute(text(cmd), name1 = name, name2 = name);
-#   return redirect('/')
+def get_numstates(username):
+    with engine.connect() as conn:
+        results = conn.execute("""select count(distinct l.state) as numstate\
+                                from recommended as r, location as l \
+                                where r.zipcode=l.zipcode \
+                                and r.username = '{}'""".format(username)).fetchone()
+
+        return results['numstate']
+
+print get_numstates('user1')
+
+
 
 
 

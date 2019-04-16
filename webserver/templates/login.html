@@ -1,28 +1,23 @@
 <html>
 {% extends "layout.html" %}
-<link rel="stylesheet" href="static/style.css" type = "text/css">
-<style>
-  body{
-    font-size: 15pt;
-    font-family: arial;
-  }
-</style>
 
 {% block body %}
   <h1>Sign in here:</h1>
-  {% if error %}
-    <p class=error><strong>Error:</strong> {{ error }}</p>
-  {% endif %}
+  <div>
+    {% if error %}
+      <p class="error"><strong>Error:</strong> {{ error }}</p>
+      <br><br>
+    {% endif %}
+  </div>
 
   <div>
-
     <form action="/login" method="POST">
       <input type="username" name="username" placeholder="Username">
       <input type="home_zip" name="home_zip" placeholder="Home Zipcode">
       <input type="submit" value="Log in">
     </form>
-
   </div>
+
   <div></div>
   <div id="bottom_links">
     <h3><a href="/register">create a new account</a></h3>
