@@ -12,8 +12,8 @@
 
   <div>
     <form action="/login" method="POST">
-      <input type="username" name="username" placeholder="Username">
-      <input type="home_zip" name="home_zip" placeholder="Home Zipcode">
+      <input type="username" name="username" placeholder="Username" required>
+      <input type="home_zip" name="home_zip" placeholder="Home Zipcode" pattern="[0-9]{5}" title="U.S. zipcodes have 5 digits" required>
       <input type="submit" value="Log in">
     </form>
   </div>
