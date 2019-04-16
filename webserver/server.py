@@ -2,13 +2,9 @@
 
 """
 Columbia W4111 Intro to databases
+Weather Vane Application
 Danielle Su and Shadi Fadaee
 
-To run locally
-
-    python server.py
-
-Go to http://localhost:8111 in your browser
 
 """
 
@@ -217,7 +213,6 @@ def change_name():
 def render_rec(zipcode):
   username = session.get('username')
   check = check_zipcode(zipcode)
-  print check
 
   if check[0] == "zipcode invalid":
     error = "zipcode invalid"
@@ -246,7 +241,7 @@ def render_rec(zipcode):
 @app.route('/recommendation', methods=['POST'])
 def recommendation():
   zipcode = request.form['zipcode']
-  print zipcode
+
   return render_rec(zipcode)
 
 @app.route('/home_recommendation')

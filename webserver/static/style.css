@@ -2,7 +2,6 @@
 body,h1,h2,h3,h4,h5,h6,p,a {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
 
 body {
-/*  background-color: mediumseagreen*/
   background-color: #009B77;
   font-size: 100%;
   margin: 25px 50px 50px;
@@ -151,7 +150,6 @@ li {
     border: 2px solid #FF6347;
     padding: .5em;
     margin: auto;
-/*    margin: 25px 0px 500px;*/
     font-size: 1.2em;
 }
 
