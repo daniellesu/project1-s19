@@ -45,8 +45,6 @@ def get_history(username):
                                 and r.rec_number = recommendation.rec_number
                                 order by date_time DESC \
                                 """.format(username)).fetchall()
-        # for row in cursor:
-        #     history.append(row)
 
         return history
 
@@ -108,12 +106,6 @@ def insert_user(username, home_zip, name):
 
         conn.execute(text(cmd))
 
-        # # check to see if it was inserted
-        # table = conn.execute("""select * \
-        #                         from users \
-        #                         where username = '{}' \
-        #                         """.format(username)).fetchall()
-        # return table
 
 #
 #Functions used for \change_account
@@ -125,12 +117,6 @@ def update_homezip(username, home_zip):
                 where username = '{}' """.format(home_zip, username)
         conn.execute(text(cmd))
 
-        # # check to see if it was inserted
-        # table = conn.execute("""select * \
-        #                         from users \
-        #                         where username = '{}' \
-        #                         """.format(username)).fetchall()
-        # return table
 
 def update_name(username, name):
     with engine.connect() as conn:
@@ -138,13 +124,6 @@ def update_name(username, name):
                 set name = '{}' \
                 where username = '{}' """.format(name, username)
         conn.execute(text(cmd))
-
-        # # check to see if it was inserted
-        # table = conn.execute("""select * \
-        #                         from users \
-        #                         where username = '{}' \
-        #                         """.format(username)).fetchall()
-        # return table
 
 #
 #Functions used for \recommendation
@@ -249,11 +228,12 @@ def get_topcity(username):
                                 group by l.city, l.state \
                                 order by count(*) DESC\
                                 limit 1""".format(username)).fetchone()
-        top_city = results['city']
-        top_state = results['state']
-        return top_city, top_state
-
-top_city, top_state = get_topcity('user1')
+        if results == None:
+            return None, None
+        else:
+            top_city = results['city']
+            top_state = results['state']
+            return top_city, top_state
 
 def get_numstates(username):
     with engine.connect() as conn:
@@ -261,10 +241,7 @@ def get_numstates(username):
                                 from recommended as r, location as l \
                                 where r.zipcode=l.zipcode \
                                 and r.username = '{}'""".format(username)).fetchone()
-
         return results['numstate']
-
-print get_numstates('user1')
 
 
 

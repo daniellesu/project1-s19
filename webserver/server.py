@@ -95,8 +95,11 @@ def home():
 
   top_city, top_state = get_topcity(username)
   num_states = get_numstates(username)
-
-  context = dict(data=history, name=name, top_city=top_city, top_state=top_state, num_states=num_states)
+  if top_city == None:
+    message = 'No search history yet!'
+    context = dict(data=history, name=name, search_no=message, num_states=num_states)
+  else:
+    context = dict(data=history, name=name, top_city=top_city, top_state=top_state, num_states=num_states)
 
   return render_template("home.html", **context)
 
@@ -122,7 +125,7 @@ def login():
     return render_template('login.html', error=error)
 
   else:
-    flash('You were successfully logged in!')
+    flash('You have successfully logged in!')
     session['username'] = request.form['username']
     session['home_zip'] = request.form['home_zip']
 

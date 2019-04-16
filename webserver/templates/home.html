@@ -18,7 +18,11 @@
   </div>
   <div class="history">
     <h6>stats about you:</h6><br>
-      <h5>Your most searched city is <font color="#FF6347">{{top_city}}, {{top_state}}</font><br>
+      {% if search_no %}
+        <h5>{{search_no}}<br>
+      {% else%}
+        <h5>Your most searched city is <font color="#FF6347">{{top_city}}, {{top_state}}</font><br>
+      {% endif %}
       You have looked up the weather for <font color="#FF6347">{{num_states}}</font> different states.
       </h5>
   </div>
